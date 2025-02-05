@@ -1,7 +1,5 @@
 import numpy as np
 
-import numpy as np
-
 class PCA:
     """
     Principal Component Analysis (PCA) for dimensionality reduction.
@@ -124,25 +122,3 @@ class PCA:
         return np.dot(X_transformed, self.components_.T) + self.mean_
 
 
-if __name__ == "__main__":
-    # Example usage (pseudocode since dataset loading is project-specific):
-    # from dataset import load_dataset
-    # X, labels = load_dataset('swiss_roll.npz')
-    #
-    # pca = PCA(n_components=2)
-    # X_transformed = pca.fit_transform(X)
-    #
-    # print("Original shape:", X.shape)
-    # print("Transformed shape:", X_transformed.shape)
-    #
-    # X_reconstructed = pca.inverse_transform(X_transformed)
-    # print("Reconstructed shape:", X_reconstructed.shape)
-    pass
-
-
-if __name__ == "__main__":
-    # TODO: Load swiss roll dataset
-    # TODO: Perform PCA
-    # TODO: Visualize the results
-    # TODO: Reconstruct dataset
-    pass

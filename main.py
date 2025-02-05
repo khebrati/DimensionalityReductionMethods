@@ -1,6 +1,6 @@
 import numpy as np
 
-# from pca import PCA
+from pca import PCA
 # from isomap import Isomap
 # from lle import LLE
 
@@ -20,9 +20,13 @@ if __name__ == "__main__":
     
     # TODO: visualize and show the results
 
-    X,labels = generate_plane(n_classes=6,noise = 0,n_dim=2)
+    X,labels = generate_plane(n_classes=3,noise = 0.2,n_dim=3)
     print(X)
     print(X.shape)
     visualize_plane(X,labels)
+    pca = PCA(n_components=2)
+    x_transformed = pca.fit_transform(X)
+    recunstructed = pca.inverse_transform(x_transformed)
+    visualize_plane(recunstructed,labels)
     
     pass
