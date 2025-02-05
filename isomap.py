@@ -1,6 +1,6 @@
 import numpy as np
 from dataset import generate_plane
-from geo import KNearestNeighbors
+from geo import KNearestNeighbors, _compute_distance_matrix  # Import our distance computation
 from pca import PCA
 
 class Isomap:
@@ -24,10 +24,10 @@ class Isomap:
         Compute the geodesic distance matrix using a shortest-path algorithm (Dijkstra's).
 
         For the given dataset X:
-         1. Compute the full Euclidean distance matrix.
+         1. Compute the full Euclidean distance matrix (using _compute_distance_matrix from geo.py).
          2. Use the adj_calculator (e.g., KNearestNeighbors) to obtain the binary adjacency matrix.
          3. Build a weighted graph where an edge exists if points are neighbors, with weight equal to the Euclidean distance.
-         4. For each point, use Dijkstra's algorithm (implemented with an outer loop) to compute the shortest (geodesic)
+         4. For each point, use Dijkstra's algorithm (with an outer loop) to compute the shortest (geodesic)
             distances to all other points.
 
         Parameters:
@@ -37,20 +37,17 @@ class Isomap:
         - geodesics: numpy array, shape (m x m) where geodesics[i, j] is the geodesic distance between points i and j.
         """
         m = X.shape[0]
-        # Compute the full Euclidean distance matrix (vectorized)
-        sum_X = np.sum(X**2, axis=1)
-        sq_dists = sum_X.reshape(-1,1) + sum_X.reshape(1,-1) - 2 * np.dot(X, X.T)
-        sq_dists = np.maximum(sq_dists, 0)
-        D = np.sqrt(sq_dists)
+        # Use the distance function from geo.py to compute the Euclidean distance matrix.
+        D = _compute_distance_matrix(X)
 
-        # Get the connectivity mask -- 1 where points are neighbors, 0 elsewhere
+        # Obtain the connectivity mask (neighbors) from the adj_calculator.
         adj = self._adj_calculator(X)
         # Build weighted graph: if connected use the Euclidean distance; otherwise, set to infinity.
         G = np.where(adj == 1, D, np.inf)
-        # Make sure the diagonal is zero.
+        # Ensure the diagonal is zero.
         np.fill_diagonal(G, 0)
 
-        # Initialize geodesic distance matrix with infinities.
+        # Initialize geodesic distance matrix.
         geodesics = np.full((m, m), np.inf)
         
         # Compute geodesic distances using Dijkstra's algorithm for each starting point.
@@ -58,14 +55,14 @@ class Isomap:
             dist = G[i].copy()
             visited = np.zeros(m, dtype=bool)
             dist[i] = 0
-            # Iterate for each vertex
+            # Iterate over vertices
             for _ in range(m):
                 # Select the unvisited vertex with the smallest tentative distance.
                 j = np.argmin(np.where(visited, np.inf, dist))
                 if np.isinf(dist[j]):
                     break
                 visited[j] = True
-                # Relax the distances through vertex j.
+                # Relax distances using vertex j.
                 for k in range(m):
                     if not visited[k] and dist[j] + G[j, k] < dist[k]:
                         dist[k] = dist[j] + G[j, k]
@@ -107,26 +104,25 @@ class Isomap:
         Returns:
         - Low-dimensional embedding: numpy array, shape (m x n_components)
         """
-        # Compute geodesic distances from the high-dimensional data.
+        # Compute the geodesic distances.
         geodesic_distances = self._compute_geodesic_distances(X)
-        
-        # Decompose the inner product matrix (derived from the geodesic distances) to learn low-dimensional embeddings.
+        # Decompose the inner product matrix (derived from the geodesic distances) to get embeddings.
         Y = self._decompose(geodesic_distances)
         return Y
 
 
 if __name__ == "__main__":
-    # Examplnsert(0, parent_dir)
+    # Example usage:
     from dataset import load_dataset, visualize_plane
 
-    # X, labels = load_dataset("datasets\swissroll.npz")
-    X,labels = generate_plane(n_classes=3,noise = 0.1,n_dim=3,n_samples=100)
+    # Load dataset: Here we use generate_plane to simulate a Swiss Roll-like structure.
+    X, labels = generate_plane(n_classes=3, noise=0.1, n_dim=3, n_samples=100)
     
-    # Visualize the original high-dimensional Swiss Roll.
-    print("Visualizing original Swiss Roll dataset...")
+    # Visualize the original dataset.
+    print("Visualizing original dataset...")
     visualize_plane(X, labels)
     
-    # Apply Isomap for dimension reduction.
+    # Apply Isomap for dimensionality reduction.
     isomap = Isomap(n_components=2, adj_calculator=KNearestNeighbors(10))
     X_transformed = isomap.fit_transform(X)
     
@@ -134,5 +130,5 @@ if __name__ == "__main__":
     print("Visualizing Isomap-transformed data (2D)...")
     visualize_plane(X_transformed, labels)
     
-    # (Optional) Evaluate reconstruction or quality metrics if desired.
+    # (Optional) Additional analysis can be done here.
     pass

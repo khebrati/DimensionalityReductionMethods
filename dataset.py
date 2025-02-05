@@ -1,5 +1,5 @@
 import numpy as np
-
+import matplotlib.cm as cm
 def generate_plane(n_samples=1000, n_classes=4, n_dim=3, noise=0.1, random_state=None):
     if n_dim < 2:
         raise ValueError("Number of dimensions must be at least 2")
@@ -37,26 +37,20 @@ def generate_plane(n_samples=1000, n_classes=4, n_dim=3, noise=0.1, random_state
 
 def visualize_plane(X, labels):
     import matplotlib.pyplot as plt
-    unique_labels = np.unique(labels)
     dims = X.shape[1]
 
     if dims == 1:
         plt.figure(figsize=(10, 8))
-        # For 1D, plot the values along the x-axis and use 0 for y
-        for label in unique_labels:
-            mask = labels == label
-            plt.scatter(X[mask, 0], [0]*len(X[mask, 0]), label=f'Class {label}')
+        plt.scatter(X[:, 0], [0]*len(X[:, 0]), c=labels)
         plt.xlabel('X')
-        plt.yticks([])  # Hide y-axis as it is not informative
+        plt.yticks([])
         plt.legend()
         plt.title('1D Visualization')
         plt.show()
     
     if dims == 2:
         plt.figure(figsize=(10, 8))
-        for label in unique_labels:
-            mask = labels == label
-            plt.scatter(X[mask, 0], X[mask, 1], label=f'Class {label}')
+        plt.scatter(X[:, 0], X[:, 1], c=labels)
         plt.xlabel('X')
         plt.ylabel('Y')
         plt.legend()
@@ -65,9 +59,7 @@ def visualize_plane(X, labels):
         from mpl_toolkits.mplot3d import Axes3D
         fig = plt.figure(figsize=(10, 8))
         ax = fig.add_subplot(111, projection='3d')
-        for label in unique_labels:
-            mask = labels == label
-            ax.scatter(X[mask, 0], X[mask, 1], X[mask, 2], label=f'Class {label}')
+        ax.scatter(X[:, 0], X[:, 1], X[:, 2], c=labels)
         ax.set_xlabel('X')
         ax.set_ylabel('Y')
         ax.set_zlabel('Z')
