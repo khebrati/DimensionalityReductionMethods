@@ -20,8 +20,9 @@ if __name__ == "__main__":
     
     # TODO: visualize and show the results
 
-    X,labels = generate_plane(n_classes=6,noise = 0,n_dim=3)
+    X,labels = generate_plane(n_classes=6,noise = 0,n_dim=2)
     print(X)
+    print(X.shape)
     visualize_plane(X,labels)
     
     pass

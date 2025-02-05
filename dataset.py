@@ -37,21 +37,30 @@ def generate_plane(n_samples=1000, n_classes=4, n_dim=3, noise=0.1, random_state
 
 def visualize_plane(X, labels):
     import matplotlib.pyplot as plt
-    from mpl_toolkits.mplot3d import Axes3D
-    
-    fig = plt.figure(figsize=(10, 8))
-    ax = fig.add_subplot(111, projection='3d')
-    
-    # Plot points for each class with different colors
-    for label in np.unique(labels):
-        mask = labels == label
-        ax.scatter(X[mask, 0], X[mask, 1], X[mask, 2], label=f'Class {label}')
-    
-    ax.set_xlabel('X')
-    ax.set_ylabel('Y')
-    ax.set_zlabel('Z')
-    ax.legend()
-    plt.show()
+    unique_labels = np.unique(labels)
+    dims = X.shape[1]
+
+    if dims == 2:
+        plt.figure(figsize=(10, 8))
+        for label in unique_labels:
+            mask = labels == label
+            plt.scatter(X[mask, 0], X[mask, 1], label=f'Class {label}')
+        plt.xlabel('X')
+        plt.ylabel('Y')
+        plt.legend()
+        plt.show()
+    else:
+        from mpl_toolkits.mplot3d import Axes3D
+        fig = plt.figure(figsize=(10, 8))
+        ax = fig.add_subplot(111, projection='3d')
+        for label in unique_labels:
+            mask = labels == label
+            ax.scatter(X[mask, 0], X[mask, 1], X[mask, 2], label=f'Class {label}')
+        ax.set_xlabel('X')
+        ax.set_ylabel('Y')
+        ax.set_zlabel('Z')
+        ax.legend()
+        plt.show()
 
 def load_dataset(path):
     dataset = np.load(path)
