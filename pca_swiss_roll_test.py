@@ -16,7 +16,7 @@ def main():
     # Visualize the original Swiss Roll dataset.
     # If X has 3 or more dimensions, visualize using 3D; otherwise, use 2D.
     print("Visualizing original Swiss Roll dataset...")
-    visualize_plane(X, labels)
+    # visualize_plane(X, labels)
     
     # Apply PCA to reduce the dimensionality to 2 components.
     pca = PCA(n_components=2)
@@ -24,11 +24,11 @@ def main():
     
     # Visualize the 2D projection from PCA.
     print("Visualizing PCA-transformed data (2D)...")
-    visualize_plane(X_transformed, labels)
+    # visualize_plane(X_transformed, labels)
     
     # Reconstruct the data from the 2D representation.
     X_reconstructed = pca.inverse_transform(X_transformed)
-    print("Reconstructed data shape:", X_reconstructed.shape)
+    # print("Reconstructed data shape:", X_reconstructed.shape)
     
     # Compute reconstruction error (mean squared error).
     reconstruction_error = np.mean((X - X_reconstructed) ** 2)

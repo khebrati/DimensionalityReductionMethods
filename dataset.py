@@ -40,6 +40,18 @@ def visualize_plane(X, labels):
     unique_labels = np.unique(labels)
     dims = X.shape[1]
 
+    if dims == 1:
+        plt.figure(figsize=(10, 8))
+        # For 1D, plot the values along the x-axis and use 0 for y
+        for label in unique_labels:
+            mask = labels == label
+            plt.scatter(X[mask, 0], [0]*len(X[mask, 0]), label=f'Class {label}')
+        plt.xlabel('X')
+        plt.yticks([])  # Hide y-axis as it is not informative
+        plt.legend()
+        plt.title('1D Visualization')
+        plt.show()
+    
     if dims == 2:
         plt.figure(figsize=(10, 8))
         for label in unique_labels:

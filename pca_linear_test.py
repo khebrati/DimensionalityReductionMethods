@@ -2,9 +2,9 @@ from pca import PCA
 from dataset import generate_plane
 
 # Generate a noisy linear hyperplane dataset (adjust parameters as needed)
-X, labels = generate_plane(n_samples=1000, n_classes=10, n_dim=2, noise=0.1, random_state=42)
+X, labels = generate_plane(n_samples=1000, n_classes=10, n_dim=3, noise=0.1, random_state=42)
 
-pca = PCA(n_components=1)
+pca = PCA(n_components=2)
 X_transformed = pca.fit_transform(X)
 
 print("Original shape:", X.shape)
