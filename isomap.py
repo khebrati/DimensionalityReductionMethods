@@ -37,32 +37,23 @@ class Isomap:
         - geodesics: numpy array, shape (m x m) where geodesics[i, j] is the geodesic distance between points i and j.
         """
         m = X.shape[0]
-        # Use the distance function from geo.py to compute the Euclidean distance matrix.
         D = _compute_distance_matrix(X)
 
-        # Obtain the connectivity mask (neighbors) from the adj_calculator.
         adj = self._adj_calculator(X)
-        # Build weighted graph: if connected use the Euclidean distance; otherwise, set to infinity.
         G = np.where(adj == 1, D, np.inf)
-        # Ensure the diagonal is zero.
         np.fill_diagonal(G, 0)
 
-        # Initialize geodesic distance matrix.
         geodesics = np.full((m, m), np.inf)
         
-        # Compute geodesic distances using Dijkstra's algorithm for each starting point.
         for i in range(m):
             dist = G[i].copy()
             visited = np.zeros(m, dtype=bool)
             dist[i] = 0
-            # Iterate over vertices
             for _ in range(m):
-                # Select the unvisited vertex with the smallest tentative distance.
                 j = np.argmin(np.where(visited, np.inf, dist))
                 if np.isinf(dist[j]):
                     break
                 visited[j] = True
-                # Relax distances using vertex j.
                 for k in range(m):
                     if not visited[k] and dist[j] + G[j, k] < dist[k]:
                         dist[k] = dist[j] + G[j, k]
@@ -104,31 +95,24 @@ class Isomap:
         Returns:
         - Low-dimensional embedding: numpy array, shape (m x n_components)
         """
-        # Compute the geodesic distances.
         geodesic_distances = self._compute_geodesic_distances(X)
-        # Decompose the inner product matrix (derived from the geodesic distances) to get embeddings.
         Y = self._decompose(geodesic_distances)
         return Y
 
 
 if __name__ == "__main__":
-    # Example usage:
     from dataset import load_dataset, visualize_plane
 
-    # Load dataset: Here we use generate_plane to simulate a Swiss Roll-like structure.
     X, labels = generate_plane(n_classes=3, noise=0.1, n_dim=3, n_samples=100)
+    # X,labels = load_dataset("datasets\swissroll.npz")
     
-    # Visualize the original dataset.
     print("Visualizing original dataset...")
     visualize_plane(X, labels)
     
-    # Apply Isomap for dimensionality reduction.
     isomap = Isomap(n_components=2, adj_calculator=KNearestNeighbors(10))
     X_transformed = isomap.fit_transform(X)
     
-    # Visualize the 2D embedding.
     print("Visualizing Isomap-transformed data (2D)...")
     visualize_plane(X_transformed, labels)
     
-    # (Optional) Additional analysis can be done here.
     pass
